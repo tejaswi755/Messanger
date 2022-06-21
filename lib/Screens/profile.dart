@@ -49,7 +49,7 @@ class ProfilePage extends StatelessWidget {
                   onPressed: () {},
                   color: Colors.blue,
                   child: const Text(
-                    " submit",
+                    " Submit",
                     style: TextStyle(fontSize: 25),
                   )),
             ),
