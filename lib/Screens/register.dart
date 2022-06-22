@@ -1,8 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:messanger/Screens/profile.dart';
+//import 'package:messanger/controller/registercontroller.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:messanger/model/usermodel.dart';
 
 class RegisterPage extends StatelessWidget {
-  const RegisterPage({Key? key}) : super(key: key);
+  RegisterPage({Key? key}) : super(key: key);
+
+  TextEditingController emailcontroller = TextEditingController();
+  TextEditingController passwordcontroller = TextEditingController();
+  TextEditingController cpasswordcontroller = TextEditingController();
+
+  void checkvalue() {
+    String email = emailcontroller.text.trim();
+    String password = passwordcontroller.text.trim();
+    String cpassword = cpasswordcontroller.text.trim();
+
+    if (email == "" || password == "" || cpassword == "") {
+      print("please fill all the fields");
+    } else if (password != cpassword) {
+      print("password do not match");
+    } else {
+      register(email, password);
+    }
+  }
+
+  void register(String email, String password) async {
+    UserCredential? credential;
+    String? uid;
+
+    try {
+      credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+    } on FirebaseAuthException catch (ex) {
+      print(ex.code.toString());
+    }
+
+    if (credential != null) {
+      uid = credential.user!.uid;
+      UserModel newuser =
+          UserModel(uid: uid, email: email, fullname: "", profilepic: " ");
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(uid)
+          .set(newuser.toMap())
+          .then((value) {
+        print("new user created");
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,28 +60,31 @@ class RegisterPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const TextField(
-              decoration: InputDecoration(
+            TextField(
+              controller: emailcontroller,
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Email',
                 hintText: 'Enter Email',
               ),
             ),
             const SizedBox(height: 25),
-            const TextField(
+            TextField(
+              controller: passwordcontroller,
               obscureText: true,
               keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
+              decoration: const InputDecoration(
+                border: const OutlineInputBorder(),
                 labelText: 'Password',
                 hintText: 'Enter Password',
               ),
             ),
             const SizedBox(height: 25),
-            const TextField(
+            TextField(
+              controller: cpasswordcontroller,
               obscureText: true,
               keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: ' Conform Password',
                 hintText: 'Conform Password',
@@ -48,7 +98,7 @@ class RegisterPage extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                      return ProfilePage();
+                      return const ProfilePage();
                     }));
                   },
                   color: Colors.blue,

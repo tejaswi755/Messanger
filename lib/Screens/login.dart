@@ -3,8 +3,14 @@ import 'package:messanger/Screens/home.dart';
 import 'package:messanger/Screens/register.dart';
 
 class LoginPage extends StatelessWidget {
-  const LoginPage({Key? key}) : super(key: key);
+   LoginPage({Key? key}) : super(key: key);
 
+
+
+
+  TextEditingController emailcontroller = TextEditingController();
+  TextEditingController password = TextEditingController();
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,18 +20,19 @@ class LoginPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const TextField(
-              decoration: InputDecoration(
+             TextField(
+              controller: emailcontroller,
+              decoration:const  InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Email',
                 hintText: 'Enter Email',
               ),
             ),
             const SizedBox(height: 25),
-            const TextField(
+             TextField(controller:password,
               obscureText: true,
               keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Password',
                 hintText: 'Enter Password',
