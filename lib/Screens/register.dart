@@ -96,10 +96,11 @@ class RegisterPage extends StatelessWidget {
               width: 160,
               child: MaterialButton(
                   onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return const ProfilePage();
-                    }));
+                    checkvalue();
+                    // Navigator.push(context,
+                    //     MaterialPageRoute(builder: (context) {
+                    //   return const ProfilePage();
+                    // }));
                   },
                   color: Colors.blue,
                   child: const Text(
