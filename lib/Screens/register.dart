@@ -5,26 +5,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:messanger/model/usermodel.dart';
 
-class RegisterPage extends StatelessWidget {
+class RegisterPage extends StatefulWidget {
   RegisterPage({Key? key}) : super(key: key);
 
+  @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
   TextEditingController emailcontroller = TextEditingController();
+
   TextEditingController passwordcontroller = TextEditingController();
+
   TextEditingController cpasswordcontroller = TextEditingController();
-
-  void checkvalue() {
-    String email = emailcontroller.text.trim();
-    String password = passwordcontroller.text.trim();
-    String cpassword = cpasswordcontroller.text.trim();
-
-    if (email == "" || password == "" || cpassword == "") {
-      print("please fill all the fields");
-    } else if (password != cpassword) {
-      print("password do not match");
-    } else {
-      register(email, password);
-    }
-  }
 
   void register(String email, String password) async {
     UserCredential? credential;
@@ -47,7 +40,24 @@ class RegisterPage extends StatelessWidget {
           .set(newuser.toMap())
           .then((value) {
         print("new user created");
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return const ProfilePage();
+        }));
       });
+    }
+  }
+
+  void checkvalue() {
+    String email = emailcontroller.text.trim();
+    String password = passwordcontroller.text.trim();
+    String cpassword = cpasswordcontroller.text.trim();
+
+    if (email == "" || password == "" || cpassword == "") {
+      print("please fill all the fields");
+    } else if (password != cpassword) {
+      print("password do not match");
+    } else {
+      register(email, password);
     }
   }
 
@@ -97,10 +107,6 @@ class RegisterPage extends StatelessWidget {
               child: MaterialButton(
                   onPressed: () {
                     checkvalue();
-                    // Navigator.push(context,
-                    //     MaterialPageRoute(builder: (context) {
-                    //   return const ProfilePage();
-                    // }));
                   },
                   color: Colors.blue,
                   child: const Text(
