@@ -81,7 +81,7 @@ class _ProfilePageState extends State<ProfilePage> {
           .set(widget.usermodel.toMap())
           .then((value) {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return HomeScreen();
+          return HomeScreen(usermodel: widget.usermodel,firebaseuser: widget.firebaseuser,);
         }));
       });
     } catch (ex) {

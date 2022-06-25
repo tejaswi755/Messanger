@@ -47,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
      // print(usermodel.email);
        Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                      return HomeScreen();
+                      return HomeScreen(firebaseuser: usercredential!.user,usermodel: usermodel,);
                     }));
     }
   }
