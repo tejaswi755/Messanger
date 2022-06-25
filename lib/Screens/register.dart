@@ -41,7 +41,7 @@ class _RegisterPageState extends State<RegisterPage> {
           .then((value) {
         print("new user created");
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return const ProfilePage();
+          return ProfilePage(firebaseuser:credential!.user! ,usermodel: newuser,);
         }));
       });
     }

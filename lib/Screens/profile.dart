@@ -1,13 +1,22 @@
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:messanger/Screens/home.dart';
+import 'package:messanger/model/usermodel.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  final UserModel usermodel;
+  final User firebaseuser;
+
+  const ProfilePage(
+      {super.key, required this.usermodel, required this.firebaseuser});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -15,7 +24,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   File? imageFile;
-  TextEditingController fullname = TextEditingController();
+  TextEditingController fullnamecontroller = TextEditingController();
 
   void selectimage(ImageSource source) async {
     try {
@@ -39,6 +48,44 @@ class _ProfilePageState extends State<ProfilePage> {
       }
     } catch (e) {
       print(e.toString());
+    }
+  }
+
+  void check() {
+    String fullname = fullnamecontroller.text.trim();
+    if (fullname == "" || imageFile == null) {
+      print("Pleasse fill all the details");
+    } else {
+      setdata();
+    }
+  }
+
+  void setdata() async {
+    try {
+      log("start");
+      UploadTask uploadtask = FirebaseStorage.instance
+          .ref("profilePictures")
+          .child(widget.usermodel.uid!.toString())
+          .putFile(imageFile!);
+      log("done");
+      TaskSnapshot snapshot = await uploadtask;
+      log("done2");
+      String imageurl = await snapshot.ref.getDownloadURL();
+      log(imageurl);
+      String fullname = fullnamecontroller.text.trim();
+      widget.usermodel.fullname = fullname;
+      widget.usermodel.profilepic = imageurl;
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(widget.usermodel.uid)
+          .set(widget.usermodel.toMap())
+          .then((value) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return HomeScreen();
+        }));
+      });
+    } catch (ex) {
+      print(ex);
     }
   }
 
@@ -98,10 +145,11 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(
               height: 20,
             ),
-            const TextField(
-              obscureText: true,
+            TextField(
+              controller: fullnamecontroller,
+              // obscureText: true,
               keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Name',
                 hintText: 'Enter Full Name',
@@ -114,7 +162,9 @@ class _ProfilePageState extends State<ProfilePage> {
               height: 50,
               width: 160,
               child: MaterialButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    check();
+                  },
                   color: Colors.blue,
                   child: const Text(
                     " Submit",
