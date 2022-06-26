@@ -62,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             TextField(
-              controller: emailcontroller,
+              controller: emailcontroller,keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Email',
@@ -73,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
             TextField(
               controller: passwordcontroller,
               obscureText: true,
-              keyboardType: TextInputType.emailAddress,
+             // keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Password',

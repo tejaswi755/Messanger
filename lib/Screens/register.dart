@@ -72,6 +72,7 @@ class _RegisterPageState extends State<RegisterPage> {
           children: [
             TextField(
               controller: emailcontroller,
+              keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Email',
@@ -82,7 +83,7 @@ class _RegisterPageState extends State<RegisterPage> {
             TextField(
               controller: passwordcontroller,
               obscureText: true,
-              keyboardType: TextInputType.emailAddress,
+              
               decoration: const InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: 'Password',
@@ -93,7 +94,7 @@ class _RegisterPageState extends State<RegisterPage> {
             TextField(
               controller: cpasswordcontroller,
               obscureText: true,
-              keyboardType: TextInputType.emailAddress,
+              
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: ' Conform Password',
