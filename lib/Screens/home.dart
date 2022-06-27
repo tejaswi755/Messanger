@@ -16,6 +16,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           child: Icon(Icons.search)),
       appBar: AppBar(
-        title: const Text("Home Screen"),
+        title: const Text("Messanger"),
         automaticallyImplyLeading: false,
         actions: [
           GestureDetector(
@@ -35,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Icons.logout,
             ),
             onTap: () {
-              print("logout");
+              
               FirebaseAuth.instance.signOut();
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return LoginPage();
@@ -43,7 +46,8 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           )
         ],
-      ),
+      ),body: Container(child: 
+      Text("Welcome")),
     );
   }
 }
