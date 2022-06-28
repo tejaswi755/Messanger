@@ -62,14 +62,14 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void setdata() async {
     try {
-      log("start");
+
       UploadTask uploadtask = FirebaseStorage.instance
           .ref("profilePictures")
           .child(widget.usermodel.uid!.toString())
           .putFile(imageFile!);
-      log("done");
+      
       TaskSnapshot snapshot = await uploadtask;
-      log("done2");
+    
       String imageurl = await snapshot.ref.getDownloadURL();
       log(imageurl);
       String fullname = fullnamecontroller.text.trim();

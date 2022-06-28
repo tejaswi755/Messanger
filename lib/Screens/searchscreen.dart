@@ -40,7 +40,9 @@ class _SearchScreenState extends State<SearchScreen> {
                 height: 50,
                 width: 160,
                 child: MaterialButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      setState(() {});
+                    },
                     child: Text("Search", style: TextStyle(fontSize: 25)),
                     color: Colors.blue),
               ),
@@ -49,13 +51,26 @@ class _SearchScreenState extends State<SearchScreen> {
             StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection("users")
-                  .where("email", isEqualTo: searchemailcontroller)
+                  .where("email", isEqualTo: searchemailcontroller.text.trim())
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.active) {
                   if (snapshot.hasData) {
                     QuerySnapshot datasnapshot = snapshot.data as QuerySnapshot;
-                    return Text(" we have data");
+
+                    if (datasnapshot.docs.length > 0) {
+                      Map<String, dynamic> userdata =
+                          datasnapshot.docs[0].data() as Map<String, dynamic>;
+
+                      UserModel searchuser = UserModel.fromMap(userdata);
+
+                      return ListTile(leading: CircleAvatar(backgroundImage: NetworkImage(searchuser.profilepic!)),
+                        title: Text(searchuser.fullname!),
+                        subtitle:Text(searchuser.email!) ,
+                        trailing:Icon(Icons.chevron_right_outlined) ,
+                      );
+                    }
+                    return Text(" No Data Found");
                   } else {
                     return Text(" No Data Found");
                   }
