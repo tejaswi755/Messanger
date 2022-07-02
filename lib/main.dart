@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:messanger/Screens/chatscreen.dart';
 import 'package:messanger/Screens/home.dart';
 import 'package:messanger/Screens/login.dart';
 import 'package:messanger/controller/getmodelcontroller.dart';
@@ -18,6 +19,7 @@ void main() async {
   } else {
     UserModel usermodel = await GetUserModel.getusermodelById(user.uid);
     runApp( MyApp2(firebaseuser: user,usermodel: usermodel,));
+   
 
   }
 }

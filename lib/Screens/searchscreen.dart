@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:messanger/Screens/chatscreen.dart';
+import 'package:messanger/model/chatroom.dart';
 import 'package:messanger/model/usermodel.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -15,6 +17,36 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   TextEditingController searchemailcontroller = TextEditingController();
+
+  Future<ChatRoomModel> getChatroom(UserModel targetuser) async {
+    ChatRoomModel finalchatroom;
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection("chatrooms")
+        .where("participants${widget.usermodel.uid}", isEqualTo: true)
+        .where("participants${targetuser.uid}",isEqualTo: true)
+        .get();
+    if (snapshot.docs.length > 0) {
+      var data = snapshot.docs[0].data();
+      ChatRoomModel existingchatroom =
+          ChatRoomModel.fromMap(data as Map<String, dynamic>);
+      finalchatroom = existingchatroom;
+    } else {
+      ChatRoomModel newchatroommodel = ChatRoomModel(
+          chatroomid: "dsvs",
+          lastmessage: " ",
+          participants: {
+            widget.usermodel.uid.toString(): true,
+            targetuser.uid.toString(): true
+          });
+      finalchatroom = newchatroommodel;
+      await FirebaseFirestore.instance
+          .collection("chatrooms")
+          .doc(newchatroommodel.chatroomid)
+          .set(newchatroommodel.toMap());
+    }
+
+    return finalchatroom;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +66,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 hintText: 'Enter Email',
               ),
             ),
-            SizedBox(height: 50),
+            const SizedBox(height: 50),
             Center(
               child: SizedBox(
                 height: 50,
@@ -43,11 +75,11 @@ class _SearchScreenState extends State<SearchScreen> {
                     onPressed: () {
                       setState(() {});
                     },
-                    child: Text("Search", style: TextStyle(fontSize: 25)),
-                    color: Colors.blue),
+                    color: Colors.blue,
+                    child: const Text("Search", style: TextStyle(fontSize: 25))),
               ),
             ),
-            SizedBox(height: 50),
+            const SizedBox(height: 50),
             StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection("users")
@@ -64,20 +96,31 @@ class _SearchScreenState extends State<SearchScreen> {
 
                       UserModel searchuser = UserModel.fromMap(userdata);
 
-                      return ListTile(leading: CircleAvatar(backgroundImage: NetworkImage(searchuser.profilepic!)),
+                      return ListTile(
+                        leading: CircleAvatar(
+                            backgroundImage: NetworkImage(
+                          searchuser.profilepic!,
+                        )),
                         title: Text(searchuser.fullname!),
-                        subtitle:Text(searchuser.email!) ,
-                        trailing:Icon(Icons.chevron_right_outlined) ,
+                        subtitle: Text(searchuser.email!),
+                        onTap: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return Chatscreen(firebaseuser: widget.user,usermodel: widget.usermodel,targetuser: searchuser,chatroom:   getChatroom(searchuser) ,);
+                          }));
+                        },
+                        trailing: const Icon(Icons.chevron_right_outlined),
+                        tileColor: Colors.grey[400],
                       );
                     }
-                    return Text(" No Data Found");
+                    return const Text(" No Data Found");
                   } else {
-                    return Text(" No Data Found");
+                    return const Text(" No Data Found");
                   }
                 } else if (snapshot.hasError) {
-                  return Text(" Error has occured");
+                  return const Text(" Error has occured");
                 } else {
-                  return Text(" No Data found");
+                  return const Text(" No Data found");
                 }
               },
             )

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:messanger/Screens/profile.dart';
 //import 'package:messanger/controller/registercontroller.dart';
@@ -27,7 +29,7 @@ class _RegisterPageState extends State<RegisterPage> {
       credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (ex) {
-      print(ex.code.toString());
+      log(ex.code.toString());
     }
 
     if (credential != null) {
@@ -39,7 +41,7 @@ class _RegisterPageState extends State<RegisterPage> {
           .doc(uid)
           .set(newuser.toMap())
           .then((value) {
-        print("new user created");
+        log("new user created");
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return ProfilePage(firebaseuser:credential!.user! ,usermodel: newuser,);
         }));
@@ -53,9 +55,9 @@ class _RegisterPageState extends State<RegisterPage> {
     String cpassword = cpasswordcontroller.text.trim();
 
     if (email == "" || password == "" || cpassword == "") {
-      print("please fill all the fields");
+     log("please fill all the fields");
     } else if (password != cpassword) {
-      print("password do not match");
+      log("password do not match");
     } else {
       register(email, password);
     }

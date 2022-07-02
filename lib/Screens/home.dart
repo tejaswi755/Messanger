@@ -28,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
               return SearchScreen(usermodel: widget.usermodel, user: widget.firebaseuser);
             }));
           },
-          child: Icon(Icons.search)),
+          child: const Icon(Icons.search)),
       appBar: AppBar(
         title: const Text("Messanger"),
         automaticallyImplyLeading: false,
@@ -42,12 +42,12 @@ class _HomeScreenState extends State<HomeScreen> {
               FirebaseAuth.instance.signOut();
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return LoginPage();
-              }));
+              },),);
             },
           )
         ],
       ),body: Container(child: 
-      Text("Welcome")),
+     const  Text("Welcome")),
     );
   }
 }
