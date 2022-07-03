@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:messanger/Screens/chatscreen.dart';
+import 'package:messanger/main.dart';
 import 'package:messanger/model/chatroom.dart';
 import 'package:messanger/model/usermodel.dart';
 
@@ -32,7 +33,7 @@ class _SearchScreenState extends State<SearchScreen> {
       finalchatroom = existingchatroom;
     } else {
       ChatRoomModel newchatroommodel = ChatRoomModel(
-          chatroomid: "dsvs",
+          chatroomid: uuid.v1(),
           lastmessage: " ",
           participants: {
             widget.usermodel.uid.toString(): true,

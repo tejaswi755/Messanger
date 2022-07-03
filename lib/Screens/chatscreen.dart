@@ -1,8 +1,7 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:messanger/main.dart';
 import 'package:messanger/model/chatroom.dart';
 import 'package:messanger/model/messagemodel.dart';
 import 'package:messanger/model/usermodel.dart';
@@ -30,8 +29,8 @@ class _ChatscreenState extends State<Chatscreen> {
 
     if (message != "") {
       MessageModel messagemodel = MessageModel(
-          messageid: "dhf",
-          createdon: DateTime.now(),
+          messageid: uuid.v1(),
+          createdon: DateTime.now() as DateTime,
           seen: false,
           sender: widget.usermodel.uid,
           text: message);
@@ -39,7 +38,7 @@ class _ChatscreenState extends State<Chatscreen> {
           .collection("chatrooms")
           .doc(widget.chatroom.chatroomid)
           .collection("messages")
-          .doc()
+          .doc(messagemodel.messageid)
           .set(messagemodel.tomap());
     }
   }
@@ -57,21 +56,37 @@ class _ChatscreenState extends State<Chatscreen> {
               Expanded(
                 child: Container(
                   child: StreamBuilder(
-                      stream: FirebaseFirestore.instance
-                          .collection("chatrooms")
-                          .doc(widget.chatroom.chatroomid)
-                          .collection("messages")
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.active) {
-                          if (snapshot.hasData) {
-                            QuerySnapshot datasnapshot =
-                                snapshot.data as QuerySnapshot;
-                                
-                          }
+                    stream: FirebaseFirestore.instance
+                        .collection("chatrooms")
+                        .doc(widget.chatroom.chatroomid)
+                        .collection("messages")
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.active) {
+                        if (snapshot.hasData) {
+                          QuerySnapshot datasnapshot =
+                              snapshot.data as QuerySnapshot;
+
+                          return ListView.builder(
+                            itemCount: datasnapshot.docs.length,
+                            itemBuilder: (context, index) {
+                              MessageModel currentmessage =
+                                  MessageModel.fromMap(datasnapshot.docs[index]
+                                      .data() as Map<String, dynamic>);
+                              print(currentmessage.text);
+                              return Text(currentmessage.text!);
+                            },
+                          );
+                        } else if (snapshot.hasError) {
+                          return const Text("check your internet connection");
+                        } else {
+                          return const Text("check your internet connection");
                         }
-                      }),
+                      } else {
+                        return const Text("check your internet connection");
+                      }
+                    },
+                  ),
                 ),
               ),
               Container(
@@ -88,7 +103,7 @@ class _ChatscreenState extends State<Chatscreen> {
                     )),
                     IconButton(
                         onPressed: () {
-                          log("message sent");
+                          sendmessage();
                         },
                         icon: const Icon(
                           Icons.send,
