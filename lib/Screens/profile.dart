@@ -37,8 +37,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void cropimage(XFile? file) async {
     try {
-      CroppedFile? cropfile =
-          await ImageCropper().cropImage(sourcePath: file!.path);
+      CroppedFile? cropfile = await ImageCropper().cropImage(
+        sourcePath: file!.path,
+        compressQuality: 10,
+        aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
+      );
 
       if (cropfile != null) {
         setState(() {
@@ -62,14 +65,13 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void setdata() async {
     try {
-
       UploadTask uploadtask = FirebaseStorage.instance
           .ref("profilePictures")
           .child(widget.usermodel.uid!.toString())
           .putFile(imageFile!);
-      
+
       TaskSnapshot snapshot = await uploadtask;
-    
+
       String imageurl = await snapshot.ref.getDownloadURL();
       log(imageurl);
       String fullname = fullnamecontroller.text.trim();
@@ -81,7 +83,10 @@ class _ProfilePageState extends State<ProfilePage> {
           .set(widget.usermodel.toMap())
           .then((value) {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return HomeScreen(usermodel: widget.usermodel,firebaseuser: widget.firebaseuser,);
+          return HomeScreen(
+            usermodel: widget.usermodel,
+            firebaseuser: widget.firebaseuser,
+          );
         }));
       });
     } catch (ex) {

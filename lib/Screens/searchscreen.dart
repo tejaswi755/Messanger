@@ -23,7 +23,7 @@ class _SearchScreenState extends State<SearchScreen> {
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection("chatrooms")
         .where("participants${widget.usermodel.uid}", isEqualTo: true)
-        .where("participants${targetuser.uid}",isEqualTo: true)
+        .where("participants${targetuser.uid}", isEqualTo: true)
         .get();
     if (snapshot.docs.length > 0) {
       var data = snapshot.docs[0].data();
@@ -73,17 +73,23 @@ class _SearchScreenState extends State<SearchScreen> {
                 width: 160,
                 child: MaterialButton(
                     onPressed: () {
-                      setState(() {});
+                      setState(
+                        () {},
+                      );
                     },
                     color: Colors.blue,
-                    child: const Text("Search", style: TextStyle(fontSize: 25))),
+                    child:
+                        const Text("Search", style: TextStyle(fontSize: 25))),
               ),
             ),
             const SizedBox(height: 50),
             StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection("users")
-                  .where("email", isEqualTo: searchemailcontroller.text.trim())
+                  .where(
+                    "email",
+                    isEqualTo: searchemailcontroller.text.trim(),
+                  )
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.active) {
@@ -103,11 +109,23 @@ class _SearchScreenState extends State<SearchScreen> {
                         )),
                         title: Text(searchuser.fullname!),
                         subtitle: Text(searchuser.email!),
-                        onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return Chatscreen(firebaseuser: widget.user,usermodel: widget.usermodel,targetuser: searchuser,chatroom:   getChatroom(searchuser) ,);
-                          }));
+                        onTap: () async {
+                          ChatRoomModel? chatroom = await getChatroom(searchuser);
+
+                          if(chatroom!=null){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return Chatscreen(
+                                  firebaseuser: widget.user,
+                                  usermodel: widget.usermodel,
+                                  targetuser: searchuser,
+                                  chatroom: chatroom,
+                                );
+                              },
+                            ),
+                          );}
                         },
                         trailing: const Icon(Icons.chevron_right_outlined),
                         tileColor: Colors.grey[400],

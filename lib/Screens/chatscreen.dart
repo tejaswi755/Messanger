@@ -1,6 +1,10 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:messanger/model/chatroom.dart';
+import 'package:messanger/model/messagemodel.dart';
 import 'package:messanger/model/usermodel.dart';
 
 class Chatscreen extends StatefulWidget {
@@ -21,6 +25,26 @@ class Chatscreen extends StatefulWidget {
 }
 
 class _ChatscreenState extends State<Chatscreen> {
+  void sendmessage() {
+    String message = messagecontroller.text;
+
+    if (message != "") {
+      MessageModel messagemodel = MessageModel(
+          messageid: "dhf",
+          createdon: DateTime.now(),
+          seen: false,
+          sender: widget.usermodel.uid,
+          text: message);
+      FirebaseFirestore.instance
+          .collection("chatrooms")
+          .doc(widget.chatroom.chatroomid)
+          .collection("messages")
+          .doc()
+          .set(messagemodel.tomap());
+    }
+  }
+
+  TextEditingController messagecontroller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,16 +61,19 @@ class _ChatscreenState extends State<Chatscreen> {
                 color: Colors.grey[400],
                 height: 65,
                 child: Row(
-                  children: const [
+                  children: [
                     Flexible(
                         child: TextField(
-                      decoration: InputDecoration(
+                      controller: messagecontroller,
+                      decoration: const InputDecoration(
                         border: InputBorder.none,
                       ),
                     )),
                     IconButton(
-                        onPressed: null,
-                        icon: Icon(
+                        onPressed: () {
+                          log("message sent");
+                        },
+                        icon: const Icon(
                           Icons.send,
                           color: Colors.blue,
                         ))
