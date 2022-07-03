@@ -55,7 +55,24 @@ class _ChatscreenState extends State<Chatscreen> {
           child: Column(
             children: [
               Expanded(
-                child: Container(),
+                child: Container(
+                  child: StreamBuilder(
+                      stream: FirebaseFirestore.instance
+                          .collection("chatrooms")
+                          .doc(widget.chatroom.chatroomid)
+                          .collection("messages")
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.active) {
+                          if (snapshot.hasData) {
+                            QuerySnapshot datasnapshot =
+                                snapshot.data as QuerySnapshot;
+                                
+                          }
+                        }
+                      }),
+                ),
               ),
               Container(
                 color: Colors.grey[400],
