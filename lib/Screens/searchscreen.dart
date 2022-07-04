@@ -23,8 +23,8 @@ class _SearchScreenState extends State<SearchScreen> {
     ChatRoomModel finalchatroom;
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection("chatrooms")
-        .where("participants${widget.usermodel.uid}", isEqualTo: true)
-        .where("participants${targetuser.uid}", isEqualTo: true)
+        .where("participants${widget.usermodel.uid.toString()}", isEqualTo: true)
+        .where("participants${targetuser.uid.toString()}", isEqualTo: true)
         .get();
     if (snapshot.docs.length > 0) {
       var data = snapshot.docs[0].data();
