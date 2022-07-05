@@ -130,8 +130,8 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       body: Container(
         margin: const EdgeInsets.symmetric(horizontal: 25),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+        child: ListView(
+          
           children: [
             const SizedBox(
               height: 150,

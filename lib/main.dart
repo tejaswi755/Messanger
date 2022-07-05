@@ -9,7 +9,7 @@ import 'package:messanger/firebase_options.dart';
 import 'package:messanger/model/usermodel.dart';
 import 'package:uuid/uuid.dart';
 
-var uuid = Uuid();
+var uuid = const Uuid();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

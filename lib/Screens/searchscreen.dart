@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -23,14 +25,17 @@ class _SearchScreenState extends State<SearchScreen> {
     ChatRoomModel finalchatroom;
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection("chatrooms")
-        .where("participants${widget.usermodel.uid.toString()}", isEqualTo: true)
-        .where("participants${targetuser.uid.toString()}", isEqualTo: true)
+        .where("participants.${widget.usermodel.uid}", isEqualTo: true)
+        .where("participants.${targetuser.uid}", isEqualTo: true)
         .get();
+    
+
     if (snapshot.docs.length > 0) {
       var data = snapshot.docs[0].data();
       ChatRoomModel existingchatroom =
           ChatRoomModel.fromMap(data as Map<String, dynamic>);
       finalchatroom = existingchatroom;
+      log("chat room used");
     } else {
       ChatRoomModel newchatroommodel = ChatRoomModel(
           chatroomid: uuid.v1(),
@@ -44,6 +49,7 @@ class _SearchScreenState extends State<SearchScreen> {
           .collection("chatrooms")
           .doc(newchatroommodel.chatroomid)
           .set(newchatroommodel.toMap());
+      log("chat room created");
     }
 
     return finalchatroom;
@@ -91,6 +97,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     "email",
                     isEqualTo: searchemailcontroller.text.trim(),
                   )
+                  .where('email', isNotEqualTo: widget.usermodel.email)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.active) {
@@ -111,22 +118,24 @@ class _SearchScreenState extends State<SearchScreen> {
                         title: Text(searchuser.fullname!),
                         subtitle: Text(searchuser.email!),
                         onTap: () async {
-                          ChatRoomModel? chatroom = await getChatroom(searchuser);
+                          ChatRoomModel? chatroom =
+                              await getChatroom(searchuser);
 
-                          if(chatroom!=null){
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return Chatscreen(
-                                  firebaseuser: widget.user,
-                                  usermodel: widget.usermodel,
-                                  targetuser: searchuser,
-                                  chatroom: chatroom,
-                                );
-                              },
-                            ),
-                          );}
+                          if (chatroom != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return Chatscreen(
+                                    firebaseuser: widget.user,
+                                    usermodel: widget.usermodel,
+                                    targetuser: searchuser,
+                                    chatroom: chatroom,
+                                  );
+                                },
+                              ),
+                            );
+                          }
                         },
                         trailing: const Icon(Icons.chevron_right_outlined),
                         tileColor: Colors.grey[400],

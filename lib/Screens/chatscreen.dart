@@ -78,9 +78,9 @@ class _ChatscreenState extends State<Chatscreen> {
                                             },
                                           );
                                         } else if (snapshot.hasError) {
-                                          return const Text("check your internet connection");
+                                          return Center(child: const Text("check your internet connection"));
                                         } else {
-                                          return const Text("Say hii to your new Friend");
+                                          return Center(child: const Text("Say hii to your new Friend"));
                                         }
                                       } else {
                                         return const CircularProgressIndicator();
