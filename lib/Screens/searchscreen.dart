@@ -35,7 +35,7 @@ class _SearchScreenState extends State<SearchScreen> {
       ChatRoomModel existingchatroom =
           ChatRoomModel.fromMap(data as Map<String, dynamic>);
       finalchatroom = existingchatroom;
-      log("chat room used");
+      
     } else {
       ChatRoomModel newchatroommodel = ChatRoomModel(
           chatroomid: uuid.v1(),
@@ -49,7 +49,7 @@ class _SearchScreenState extends State<SearchScreen> {
           .collection("chatrooms")
           .doc(newchatroommodel.chatroomid)
           .set(newchatroommodel.toMap());
-      log("chat room created");
+      
     }
 
     return finalchatroom;
@@ -122,7 +122,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               await getChatroom(searchuser);
 
                           if (chatroom != null) {
-                            Navigator.push(
+                            Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                 builder: (context) {

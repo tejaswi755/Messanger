@@ -39,7 +39,7 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       CroppedFile? cropfile = await ImageCropper().cropImage(
         sourcePath: file!.path,
-        compressQuality: 10,
+        compressQuality: 3,
         aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
       );
 
@@ -82,7 +82,7 @@ class _ProfilePageState extends State<ProfilePage> {
           .doc(widget.usermodel.uid)
           .set(widget.usermodel.toMap())
           .then((value) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
           return HomeScreen(
             usermodel: widget.usermodel,
             firebaseuser: widget.firebaseuser,

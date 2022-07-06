@@ -42,7 +42,7 @@ class _RegisterPageState extends State<RegisterPage> {
           .set(newuser.toMap())
           .then((value) {
         log("new user created");
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
           return ProfilePage(firebaseuser:credential!.user! ,usermodel: newuser,);
         }));
       });
