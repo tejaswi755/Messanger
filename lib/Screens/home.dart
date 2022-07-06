@@ -54,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
           stream: FirebaseFirestore.instance
               .collection("chatrooms")
               .where("participants.${widget.usermodel.uid}", isEqualTo: true)
+              .orderBy("lastmessage", descending: true)
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.active) {
@@ -115,7 +116,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 }
               } else if (snapshot.hasError) {
-                return const Text("Check your Internet Connection");
+                print(snapshot.error.toString());
+                return Text(snapshot.error.toString());
               } else {
                 return const Text("No Chats");
               }

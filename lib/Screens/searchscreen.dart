@@ -40,6 +40,7 @@ class _SearchScreenState extends State<SearchScreen> {
       ChatRoomModel newchatroommodel = ChatRoomModel(
           chatroomid: uuid.v1(),
           lastmessage: " ",
+          lastaccessed: DateTime.now(),
           participants: {
             widget.usermodel.uid.toString(): true,
             targetuser.uid.toString(): true

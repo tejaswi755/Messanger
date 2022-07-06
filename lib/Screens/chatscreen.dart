@@ -1,5 +1,3 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +41,7 @@ class _ChatscreenState extends State<Chatscreen> {
           .doc(messagemodel.messageid)
           .set(messagemodel.tomap());
       widget.chatroom.lastmessage = message;
+      widget.chatroom.lastaccessed = DateTime.now();
       FirebaseFirestore.instance
           .collection("chatrooms")
           .doc(widget.chatroom.chatroomid)
@@ -55,7 +54,6 @@ class _ChatscreenState extends State<Chatscreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-      
         title: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
           CircleAvatar(
               backgroundImage: NetworkImage(widget.targetuser.profilepic!)),
@@ -79,7 +77,6 @@ class _ChatscreenState extends State<Chatscreen> {
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.active) {
-                      
                       if (snapshot.hasData) {
                         QuerySnapshot datasnapshot =
                             snapshot.data as QuerySnapshot;
