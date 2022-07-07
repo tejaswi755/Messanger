@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:messanger/Screens/home.dart';
+import 'package:messanger/controller/uihelp.dart';
 import 'package:messanger/model/usermodel.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -27,11 +28,14 @@ class _ProfilePageState extends State<ProfilePage> {
   TextEditingController fullnamecontroller = TextEditingController();
 
   void selectimage(ImageSource source) async {
+    UiHelper.showloadingDialog(context, "Loading");
     try {
       XFile? pickedfile = await ImagePicker().pickImage(source: source);
       cropimage(pickedfile);
     } catch (e) {
       //print(e.toString());
+      Navigator.pop(context);
+      UiHelper.showAlertDialog(context, "Error!", e.toString());
     }
   }
 
@@ -40,30 +44,34 @@ class _ProfilePageState extends State<ProfilePage> {
       CroppedFile? cropfile = await ImageCropper().cropImage(
         sourcePath: file!.path,
         compressQuality: 3,
-        aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
+        aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
       );
 
       if (cropfile != null) {
         setState(() {
           imageFile = File(cropfile.path);
+
           // print(imageFile);
         });
+        Navigator.pop(context);
       }
     } catch (e) {
-      print(e.toString());
+      UiHelper.showAlertDialog(context, "Error!te", e.toString());
     }
   }
 
   void check() {
     String fullname = fullnamecontroller.text.trim();
     if (fullname == "" || imageFile == null) {
-      print("Pleasse fill all the details");
+      UiHelper.showAlertDialog(
+          context, "Incomplete", "Please fill all the details");
     } else {
       setdata();
     }
   }
 
   void setdata() async {
+    UiHelper.showloadingDialog(context, "Uploading Image");
     try {
       UploadTask uploadtask = FirebaseStorage.instance
           .ref("profilePictures")
@@ -73,7 +81,7 @@ class _ProfilePageState extends State<ProfilePage> {
       TaskSnapshot snapshot = await uploadtask;
 
       String imageurl = await snapshot.ref.getDownloadURL();
-      log(imageurl);
+
       String fullname = fullnamecontroller.text.trim();
       widget.usermodel.fullname = fullname;
       widget.usermodel.profilepic = imageurl;
@@ -82,7 +90,9 @@ class _ProfilePageState extends State<ProfilePage> {
           .doc(widget.usermodel.uid)
           .set(widget.usermodel.toMap())
           .then((value) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+        Navigator.popUntil(context, (route) => route.isFirst);
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) {
           return HomeScreen(
             usermodel: widget.usermodel,
             firebaseuser: widget.firebaseuser,
@@ -90,7 +100,8 @@ class _ProfilePageState extends State<ProfilePage> {
         }));
       });
     } catch (ex) {
-      print(ex);
+      Navigator.pop(context);
+      UiHelper.showAlertDialog(context, "Error!", ex.toString());
     }
   }
 
@@ -131,7 +142,6 @@ class _ProfilePageState extends State<ProfilePage> {
       body: Container(
         margin: const EdgeInsets.symmetric(horizontal: 25),
         child: ListView(
-          
           children: [
             const SizedBox(
               height: 150,
@@ -165,7 +175,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             SizedBox(
               height: 50,
-              width: 160,
+              width: 10,
               child: MaterialButton(
                   onPressed: () {
                     check();

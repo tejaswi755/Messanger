@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:messanger/Screens/home.dart';
 import 'package:messanger/Screens/register.dart';
+import 'package:messanger/controller/uihelp.dart';
 import 'package:messanger/model/usermodel.dart';
 
 class LoginPage extends StatefulWidget {
@@ -21,7 +22,8 @@ class _LoginPageState extends State<LoginPage> {
     String email = emailcontroller.text.trim();
     String password = passwordcontroller.text.trim();
     if (email == "" || password == "") {
-      print("All fields are not filled");
+      UiHelper.showAlertDialog(
+          context, "Data Incomplete", "All fields are not filled");
     } else {
       login(email, password);
     }
@@ -30,11 +32,15 @@ class _LoginPageState extends State<LoginPage> {
   void login(String email, String password) async {
     UserCredential? usercredential;
     String? uid;
+
+    UiHelper.showloadingDialog(context, "Loging In");
     try {
       usercredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (ex) {
-      print(ex.code.toString());
+      Navigator.pop(context);
+
+      UiHelper.showAlertDialog(context, "Error !", ex.code.toString());
     }
 
     if (usercredential != null) {
@@ -43,12 +49,14 @@ class _LoginPageState extends State<LoginPage> {
           await FirebaseFirestore.instance.collection("users").doc(uid).get();
 
       UserModel usermodel =
-           UserModel.fromMap(userdata.data() as Map<String, dynamic>);
-     // print(usermodel.email);
-       Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) {
-                      return HomeScreen(firebaseuser: usercredential!.user!,usermodel: usermodel,);
-                    }));
+          UserModel.fromMap(userdata.data() as Map<String, dynamic>);
+        Navigator.pop(context);
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+        return HomeScreen(
+          firebaseuser: usercredential!.user!,
+          usermodel: usermodel,
+        );
+      }));
     }
   }
 
@@ -62,7 +70,8 @@ class _LoginPageState extends State<LoginPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             TextField(
-              controller: emailcontroller,keyboardType: TextInputType.emailAddress,
+              controller: emailcontroller,
+              keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Email',
@@ -73,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
             TextField(
               controller: passwordcontroller,
               obscureText: true,
-             // keyboardType: TextInputType.emailAddress,
+              // keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Password',
@@ -87,7 +96,6 @@ class _LoginPageState extends State<LoginPage> {
               child: MaterialButton(
                   onPressed: () {
                     check();
-                   
                   },
                   color: Colors.blue,
                   child: const Text(

@@ -5,6 +5,7 @@ import 'package:messanger/Screens/profile.dart';
 //import 'package:messanger/controller/registercontroller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:messanger/controller/uihelp.dart';
 import 'package:messanger/model/usermodel.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -21,15 +22,34 @@ class _RegisterPageState extends State<RegisterPage> {
 
   TextEditingController cpasswordcontroller = TextEditingController();
 
+  void checkvalue() {
+    String email = emailcontroller.text.trim();
+    String password = passwordcontroller.text.trim();
+    String cpassword = cpasswordcontroller.text.trim();
+
+    if (email == "" || password == "" || cpassword == "") {
+      
+      UiHelper.showAlertDialog(
+          context, "Data Incomplete", "All fields are not Completed");
+    } else if (password != cpassword) {
+      
+      UiHelper.showAlertDialog(context, "Password Miss-Match",
+          "Password in the fields do not Match");
+    } else {
+      register(email, password);
+    }
+  }
+
   void register(String email, String password) async {
     UserCredential? credential;
     String? uid;
-
+    UiHelper.showloadingDialog(context, "Registering ");
     try {
       credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (ex) {
-      log(ex.code.toString());
+      Navigator.pop(context);
+      UiHelper.showAlertDialog(context, "Error!", ex.code.toString());
     }
 
     if (credential != null) {
@@ -41,25 +61,15 @@ class _RegisterPageState extends State<RegisterPage> {
           .doc(uid)
           .set(newuser.toMap())
           .then((value) {
-        log("new user created");
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-          return ProfilePage(firebaseuser:credential!.user! ,usermodel: newuser,);
+       Navigator.popUntil(context, (route) => route.isFirst);
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) {
+          return ProfilePage(
+            firebaseuser: credential!.user!,
+            usermodel: newuser,
+          );
         }));
       });
-    }
-  }
-
-  void checkvalue() {
-    String email = emailcontroller.text.trim();
-    String password = passwordcontroller.text.trim();
-    String cpassword = cpasswordcontroller.text.trim();
-
-    if (email == "" || password == "" || cpassword == "") {
-     log("please fill all the fields");
-    } else if (password != cpassword) {
-      log("password do not match");
-    } else {
-      register(email, password);
     }
   }
 
@@ -85,7 +95,6 @@ class _RegisterPageState extends State<RegisterPage> {
             TextField(
               controller: passwordcontroller,
               obscureText: true,
-              
               decoration: const InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: 'Password',
@@ -96,7 +105,6 @@ class _RegisterPageState extends State<RegisterPage> {
             TextField(
               controller: cpasswordcontroller,
               obscureText: true,
-              
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: ' Conform Password',

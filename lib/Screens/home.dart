@@ -5,6 +5,7 @@ import 'package:messanger/Screens/chatscreen.dart';
 import 'package:messanger/Screens/login.dart';
 import 'package:messanger/Screens/searchscreen.dart';
 import 'package:messanger/controller/getmodelcontroller.dart';
+import 'package:messanger/controller/uihelp.dart';
 import 'package:messanger/model/chatroom.dart';
 import 'package:messanger/model/usermodel.dart';
 
@@ -25,10 +26,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
             onPressed: () {
+               
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return SearchScreen(
                     usermodel: widget.usermodel, user: widget.firebaseuser);
-              }));
+              },),);
             },
             child: const Icon(Icons.search)),
         appBar: AppBar(
@@ -54,8 +56,8 @@ class _HomeScreenState extends State<HomeScreen> {
           stream: FirebaseFirestore.instance
               .collection("chatrooms")
               .where("participants.${widget.usermodel.uid}", isEqualTo: true)
-              .orderBy("lastmessage", descending: true)
               .snapshots(),
+          //   TODO: Sort user according to last message
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.active) {
               if (snapshot.hasData) {
@@ -84,14 +86,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               margin: EdgeInsets.symmetric(vertical: 1),
                               child: ListTile(
                                 onTap: () {
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) {
-                                    return Chatscreen(
-                                        usermodel: widget.usermodel,
-                                        firebaseuser: widget.firebaseuser,
-                                        chatroom: chatroomodel,
-                                        targetuser: targetuser);
-                                  }));
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return Chatscreen(
+                                            usermodel: widget.usermodel,
+                                            firebaseuser: widget.firebaseuser,
+                                            chatroom: chatroomodel,
+                                            targetuser: targetuser);
+                                      },
+                                    ),
+                                  );
                                 },
                                 leading: CircleAvatar(
                                   backgroundImage:
