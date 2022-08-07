@@ -60,7 +60,7 @@ class _ChatscreenState extends State<Chatscreen> {
           const SizedBox(
             width: 50,
           ),
-          const Text("Tejaswi")
+           Text(widget.targetuser.fullname!)
         ]),
       ),
       body: Container(

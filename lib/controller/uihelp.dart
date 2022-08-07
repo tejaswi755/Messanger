@@ -8,8 +8,8 @@ class UiHelper {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 20),
+            const CircularProgressIndicator(),
+            const SizedBox(height: 20),
             Text(title),
           ],
         ),
@@ -34,7 +34,7 @@ class UiHelper {
           onPressed: () {
             Navigator.pop(context);
           },
-          child: Text("OK"),
+          child: const Text("OK"),
         )
       ],
     );
